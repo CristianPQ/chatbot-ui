@@ -12,8 +12,25 @@ export const config = {
 
 const handler = async (req: Request): Promise<Response> => {
   try {
-    const { model, messages, key, prompt } = (await req.json()) as ChatBody;
+    const {
+      model,
+      messages: messagesList,
+      key,
+      prompt,
+    } = (await req.json()) as ChatBody;
 
+    // TODO: to review as it cleans recommendations from previous messages
+    const messages = messagesList.map((message, idx, arr): Message => {
+      if (idx <= arr.length - 2 && message.role == 'user') {
+        const splittedContent = message.content.split('embedding results:');
+        const content = splittedContent[0].trim();
+        return {
+          role: 'user',
+          content,
+        };
+      }
+      return message;
+    });
     await init((imports) => WebAssembly.instantiate(wasm, imports));
     const encoding = new Tiktoken(
       tiktokenModel.bpe_ranks,
