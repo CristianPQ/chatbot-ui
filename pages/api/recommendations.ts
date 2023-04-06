@@ -43,6 +43,7 @@ const handler = async (req: Request): Promise<Response> => {
     const json = await response.json();
 
     let recommendationsMessage = '';
+
     for (let i = 0; i < json.length; i++) {
       // FORMATTING how to send this data to the OpenAI API
       const message =
