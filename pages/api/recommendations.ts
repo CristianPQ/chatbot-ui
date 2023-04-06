@@ -1,4 +1,8 @@
-import { BACKEND_HOST, BACKEND_API_KEY } from '@/utils/app/const';
+import {
+  BACKEND_HOST,
+  BACKEND_API_KEY,
+  DEFAULT_RECOMMENDATIONS_MODEL,
+} from '@/utils/app/const';
 
 export const config = {
   runtime: 'edge',
@@ -6,8 +10,9 @@ export const config = {
 
 const handler = async (req: Request): Promise<Response> => {
   try {
-    const { query } = (await req.json()) as {
+    const { query, recommedations_model_name } = (await req.json()) as {
       query: string;
+      recommedations_model_name: string;
     };
 
     const response = await fetch(
@@ -15,7 +20,8 @@ const handler = async (req: Request): Promise<Response> => {
         new URLSearchParams({
           num_recommendations: '5',
           api_key: BACKEND_API_KEY,
-          // recommedations_model_name: 'TO DEFINE WHERE TO GET'
+          recommedations_model_name:
+            recommedations_model_name || DEFAULT_RECOMMENDATIONS_MODEL,
         }).toString(),
       {
         method: 'POST',

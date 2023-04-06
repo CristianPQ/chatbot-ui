@@ -9,3 +9,6 @@ export const BACKEND_HOST =
 
 export const BACKEND_API_KEY =
   process.env.BACKEND_API_KEY || 'c3bc0b07-81ca-45d4-9ad3-97e157588d26';
+
+export const DEFAULT_RECOMMENDATIONS_MODEL =
+  'embeddings/freshly_embeddings_max_1000_tokens.csv';
