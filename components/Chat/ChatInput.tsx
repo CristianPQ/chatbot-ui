@@ -72,7 +72,29 @@ export const ChatInput: FC<Props> = ({
     updatePromptListVisibility(value);
   };
 
-  const handleSend = () => {
+  const recommendationsHook = async (messageContent: string) => {
+    const response = await fetch('/api/recommendations', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ query: messageContent }),
+    });
+    let recommendationsMessage = '';
+    if (!response.ok) {
+      recommendationsMessage = 'No recommendations found';
+    }
+    const data = await response.json();
+    if (data) recommendationsMessage = data.recommendationsMessage;
+
+    return (
+      `user query: ${messageContent}` +
+      '\n' +
+      `embedding results: ${recommendationsMessage}`
+    );
+  };
+
+  const handleSend = async () => {
     if (messageIsStreaming) {
       return;
     }
@@ -82,7 +104,9 @@ export const ChatInput: FC<Props> = ({
       return;
     }
 
-    onSend({ role: 'user', content });
+    const extendedContent = await recommendationsHook(content);
+
+    onSend({ role: 'user', content: extendedContent });
     setContent('');
 
     if (window.innerWidth < 640 && textareaRef && textareaRef.current) {
